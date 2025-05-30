@@ -3,8 +3,10 @@ package com.hari.movie_service.service.Implementation;
 import com.hari.movie_service.DTO.GenreResponse;
 import com.hari.movie_service.DTO.MovieRequest;
 import com.hari.movie_service.DTO.MovieResponse;
+import com.hari.movie_service.DTO.ShowTimingRequest;
 import com.hari.movie_service.entity.Genre;
 import com.hari.movie_service.entity.Movie;
+import com.hari.movie_service.entity.ShowTime;
 import com.hari.movie_service.repository.GenreRepo;
 import com.hari.movie_service.repository.MovieRepo;
 import com.hari.movie_service.service.MovieService;
@@ -18,9 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +52,11 @@ public class MovieImpl implements MovieService {
                 movieResponse.setGenre(genreResponse);
             }
 
+
+
+
+
+
             responseList.add(movieResponse);
         }
 
@@ -63,10 +68,14 @@ public class MovieImpl implements MovieService {
         // Fetch genre from DB
         Genre genre = genreRepo.findById(request.getGenreId())
                 .orElseThrow(() -> new RuntimeException("Genre not found"));
-
-
-
         Movie movie = new Movie();
+        Optional<Movie> response = Optional.empty();
+        if (!(request.getId() == null)) {
+            response = movieRepo.findById(request.getId());
+        }
+        if (Objects.requireNonNull(response).isPresent()) {
+            movie.setId(request.getId());
+        }
         movie.setTitle(request.getTitle());
         movie.setDescription(request.getDescription());
         movie.setLanguage(request.getLanguage());
@@ -74,10 +83,9 @@ public class MovieImpl implements MovieService {
         movie.setCreatedAt(LocalDateTime.now());
         movie.setUpdatedAt(LocalDateTime.now());
         movie.setGenre(genre);
-
         // Save movie
         Movie savedMovie = movieRepo.save(movie);
-        return new ResponseEntity<>(savedMovie,HttpStatus.OK);
+        return new ResponseEntity<>(savedMovie, HttpStatus.OK);
 
     }
 
@@ -92,6 +100,17 @@ public class MovieImpl implements MovieService {
     public ResponseEntity<List<Map<String, Object>>> getAll() {
         List<Map<String,Object>> movies =  movieRepo.findMovies();
         return new ResponseEntity<>(movies,HttpStatus.OK);
+    }
+    @Override
+    public ResponseEntity<List<Map<String,Object>>> getMovieById(Long id) {
+        List<Map<String,Object>> movie = movieRepo.findByMovieId(id);
+        return  new ResponseEntity<>(movie,HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> deleteById(Long id) {
+        movieRepo.deleteById(id);
+        return new ResponseEntity<>("DELETED SUCCESSFULLY",HttpStatus.OK);
     }
 }
 

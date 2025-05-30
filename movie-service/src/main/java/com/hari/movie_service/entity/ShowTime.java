@@ -2,6 +2,7 @@ package com.hari.movie_service.entity;
 
 import com.hari.movie_service.DTO.MovieSession;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "SHOW_TIME")
+@Data
 public class ShowTime {
 
     @Id

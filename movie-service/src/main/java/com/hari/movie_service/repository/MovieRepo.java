@@ -51,4 +51,20 @@ public interface MovieRepo extends JpaRepository<Movie,Long> {
         LEFT JOIN `CAST` c ON c.ID = mc.cast_id
     """, nativeQuery = true)
     List<Map<String, Object>> findMovies();
+
+
+    @Query(value = "select \n" +
+            "m.ID AS movie_id, m.TITLE AS movie_title, m.LANGUAGE, m.DESCRIPTION, m.RELEASE_DATE,\n" +
+            "g.NAME AS genre_name, \n" +
+            "st.SHOW_NAME, st.THEATRE_NAME,\n" +
+            "p.URL AS poster_url, p.IS_ACTIVE AS poster_active, \n" +
+            "c.cast_id AS cast_id , c2.NAME AS cast_name \n" +
+            "from MOVIE m\n" +
+            "join movies_cast c on m.ID = c.movie_id \n" +
+            "join `CAST` c2 on c2.ID = c.cast_id \n" +
+            "join SHOW_TIME st on st.MOVIE_ID = m.ID \n" +
+            "join GENRE g on g.ID = m.genre_id \n" +
+            "join POSTER p on p.ID = m.ID \n" +
+            "where m.id = :id",nativeQuery = true)
+   List<Map<String,Object>> findByMovieId(Long id);
 }

@@ -17,27 +17,54 @@ import java.util.Map;
 public class MovieController {
 
     private final MovieService movieService;
-
     @GetMapping("/")
-    public ResponseEntity<List<MovieResponse>> getAllMovies(){
-        return movieService.getAllMovies();
+    public ResponseEntity<List<Map<String,Object>>> getAll(){
+        return movieService.getAll();
     }
 
-    @GetMapping("/with-genre")
-    public ResponseEntity<List<Map<String,Object>>> getAllMoviesWithGenre(){
-        return movieService.getAllMoviesWithGenre();
+    @GetMapping("/{id}")
+    public ResponseEntity <List<Map<String,Object>>> getMovieById(@PathVariable Long id){
+        return movieService.getMovieById(id);
     }
+
 
     @PostMapping("/")
     public ResponseEntity<Movie> saveMovie(@RequestBody MovieRequest movie){
         return movieService.saveMovie(movie);
     }
 
-
-    @GetMapping("/get-All")
-    public ResponseEntity<List<Map<String,Object>>> getAll(){
-        return movieService.getAll();
+    @PutMapping("/")
+    public ResponseEntity<Movie> UpdateMovie(@RequestBody MovieRequest movie){
+        return movieService.saveMovie(movie);
     }
+
+    @DeleteMapping("/")
+    public ResponseEntity<?> deleteMovieById(@RequestParam Long id ){
+        return movieService.deleteById(id);
+    }
+
+
+
+//    @GetMapping("/")
+//    public ResponseEntity<List<MovieResponse>> getAllMovies(){
+//        return movieService.getAllMovies();
+//    }
+//
+//    @GetMapping("/with-genre")
+//    public ResponseEntity<List<Map<String,Object>>> getAllMoviesWithGenre(){
+//        return movieService.getAllMoviesWithGenre();
+//    }
+//
+//    @PostMapping("/")
+//    public ResponseEntity<Movie> saveMovie(@RequestBody MovieRequest movie){
+//        return movieService.saveMovie(movie);
+//    }
+//
+//
+
+
+
+
 
 
 

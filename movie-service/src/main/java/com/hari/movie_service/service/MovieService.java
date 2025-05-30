@@ -17,4 +17,8 @@ public interface MovieService {
     ResponseEntity<List<Map<String,Object>>> getAllMoviesWithGenre();
 
     ResponseEntity<List<Map<String, Object>>> getAll();
+
+    ResponseEntity <List<Map<String,Object>>> getMovieById(Long id);
+
+    ResponseEntity<?> deleteById(Long id);
 }
