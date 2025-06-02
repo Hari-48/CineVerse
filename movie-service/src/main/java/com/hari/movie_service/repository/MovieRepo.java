@@ -4,10 +4,12 @@ import com.hari.movie_service.DTO.MovieResponse;
 import com.hari.movie_service.entity.Movie;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface MovieRepo extends JpaRepository<Movie,Long> {
@@ -67,4 +69,8 @@ public interface MovieRepo extends JpaRepository<Movie,Long> {
             "join POSTER p on p.ID = m.ID \n" +
             "where m.id = :id",nativeQuery = true)
    List<Map<String,Object>> findByMovieId(Long id);
+
+    @Query("SELECT m FROM Movie m LEFT JOIN FETCH m.casts WHERE m.id = :id")
+    Optional<Movie> findByIdWithCasts(@Param("id") Long id);
+
 }

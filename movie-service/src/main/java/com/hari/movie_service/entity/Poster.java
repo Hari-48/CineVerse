@@ -1,11 +1,11 @@
 package com.hari.movie_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
-
-import java.util.Set;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "POSTER")
 public class Poster {
     @Id
@@ -24,7 +24,9 @@ public class Poster {
 
     @ManyToOne
     @JoinColumn(name = "MOVIE_ID")
+    @JsonIgnore
     private Movie movie;
+
 
 
 }

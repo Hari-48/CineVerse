@@ -1,5 +1,6 @@
 package com.hari.movie_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 @Entity
 @Table(name = "GENRE")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,6 @@
 package com.hari.movie_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hari.movie_service.DTO.MovieSession;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -38,6 +39,7 @@ public class ShowTime {
 
     @ManyToOne
     @JoinColumn(name = "MOVIE_ID")
+    @JsonIgnore
     private Movie movie;
 
 
