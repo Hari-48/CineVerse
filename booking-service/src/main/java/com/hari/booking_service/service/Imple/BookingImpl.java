@@ -32,14 +32,13 @@ public class BookingImpl implements BookingService {
     private final BookingProducerService bookingEventProducer;
 
 
-
     @Override
     public ResponseEntity<?> bookTicket(BookingRequest request) {
 
-        Long availability = seatRepo.validate(request.getShowTimeId(),request.getSeatNumbers());
-        if(availability!=0){
+        Long availability = seatRepo.validate(request.getShowTimeId(), request.getSeatNumbers());
+        if (availability != 0) {
             return new ResponseEntity<>(HttpStatus.OK);
-        }else {
+        } else {
             Booking booking = new Booking();
             booking.setBookingTime(LocalTime.now());
             booking.setStatus(Status.valueOf("BOOKED"));
@@ -47,27 +46,28 @@ public class BookingImpl implements BookingService {
             booking.setMovieId(request.getMovieId());
             booking.setUserId(request.getUserId());
             booking.setShowTimeId(request.getShowTimeId());
-            Booking response =  bookingRepo.save(booking);
+            Booking response = bookingRepo.save(booking);
 
-            Boolean QRCode =  generateQRCode(response);
+            Boolean QRCode = generateQRCode(response);
             updateSeat(request);
-//
+
 //            Booking saveQr = bookingRepo.findById(response.getId()).get();
 //            saveQr.setQrCodeUrl("http://localhost:8002/bookings/qr/"+saveQr.getId());
 //            Booking finalBooking = bookingRepo.saveAndFlush(saveQr);
 //            return new ResponseEntity<>(finalBooking,HttpStatus.OK);
+
+
             return new ResponseEntity<>(response,HttpStatus.OK);
         }
     }
-
 
 
     @Override
     public ResponseEntity<?> cancelTicket(Long bookingId) {
         Booking booking = bookingRepo.findById(bookingId).get();
         bookingRepo.cancelTicket(bookingId);
-        seatRepo.updateSeatAvailability(booking.getSeatNumbers(),booking.getShowTimeId());
-        return new ResponseEntity<>("BOOKING CANCELLED SUCCESSFULLY",HttpStatus.OK);
+        seatRepo.updateSeatAvailability(booking.getSeatNumbers(), booking.getShowTimeId());
+        return new ResponseEntity<>("BOOKING CANCELLED SUCCESSFULLY", HttpStatus.OK);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class BookingImpl implements BookingService {
 
     @Override
     public ResponseEntity<?> getBookingOfUser(Long userId) {
-        return new ResponseEntity<>(bookingRepo.findByUserId(userId),HttpStatus.OK);
+        return new ResponseEntity<>(bookingRepo.findByUserId(userId), HttpStatus.OK);
     }
 
     @Override
@@ -85,11 +85,11 @@ public class BookingImpl implements BookingService {
         return null;
     }
 
-//    public Boolean generateQRCode(Booking response){
+//    public Boolean generateQRCode(Booking response) {
 //        String filePath = "src/main/resources/qr/booking-" + response.getId() + ".png";
 //        try {
-//            QRCodeGen.generateQRCodeImage(response,250,250,filePath);
-//sendBookingMessage(response);
+//            QRCodeGen.generateQRCodeImage(response, 250, 250, filePath);
+//            sendBookingMessage(response);
 //            return true;
 //        } catch (WriterException e) {
 //            throw new RuntimeException(e);
@@ -102,9 +102,12 @@ public class BookingImpl implements BookingService {
         try {
             byte[] qrBytes = QRCodeGen.getQRCodeAsBytes(response.toString(), 250, 250);
             String base64Qr = Base64.getEncoder().encodeToString(qrBytes);
+
             // Include base64Qr in a custom response DTO
+
 //            BookingResponse bookingResponse = new BookingResponse(response, base64Qr);
 //            return new ResponseEntity<>(bookingResponse, HttpStatus.OK);
+
             response.setQrCodeUrl(base64Qr);
             bookingRepo.saveAndFlush(response);
 
@@ -116,8 +119,7 @@ public class BookingImpl implements BookingService {
             throw new RuntimeException(e);
         }
     }
-
-    public void updateSeat(BookingRequest request){
+    public void updateSeat(BookingRequest request) {
         Seat seat = new Seat();
         seat.setIsBooked(true);
         seat.setSeatNumber(request.getSeatNumbers());
@@ -125,14 +127,15 @@ public class BookingImpl implements BookingService {
         seatRepo.save(seat);
     }
 
-    public void sendBookingMessage(Booking booking){
+    public void sendBookingMessage(Booking booking) {
         bookingEventProducer.sendBookingEvent(new TicketBookedEvent(
                 booking.getId(),
                 booking.getUserId(),
                 booking.getShowTimeId(),
                 Arrays.asList(booking.getSeatNumbers().split(",")),
-                booking.getBookingTime(),booking.getQrCodeUrl()
+                booking.getBookingTime(), booking.getQrCodeUrl()
         ));
+
 
         //docker exec -it apache-kafka-kafka-1 bash
 //        kafka-console-consumer \
@@ -140,8 +143,6 @@ public class BookingImpl implements BookingService {
 //  --topic ticket-booked \
 //  --from-beginning
     }
-
-
 
 
 }
